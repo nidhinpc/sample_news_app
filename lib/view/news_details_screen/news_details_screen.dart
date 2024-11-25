@@ -22,14 +22,17 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize the WebViewController
+    if (widget.saved != null) {
+      SavedNewsScreen(
+        saved: widget.saved,
+      );
+    }
+
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
-          onProgress: (int progress) {
-            // Update loading progress if needed
-          },
+          onProgress: (int progress) {},
           onPageStarted: (String url) {
             debugPrint('Page started loading: $url');
           },
@@ -40,7 +43,6 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
             debugPrint('Web resource error: ${error.description}');
           },
           onNavigationRequest: (NavigationRequest request) {
-            // Allow navigation unless explicitly restricted
             debugPrint('Navigation request: ${request.url}');
             return NavigationDecision.navigate;
           },
@@ -50,8 +52,7 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final articlesList =
-        context.watch<HomeScreenController>().articlesList; // Safer access
+    final articlesList = context.watch<HomeScreenController>().articlesList;
     final String? weburl = (articlesList != null &&
             widget.index < articlesList.length &&
             articlesList[widget.index].url != null)
@@ -59,7 +60,6 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
         : null;
 
     if (weburl == null || weburl.isEmpty) {
-      // Show error if URL is not available
       return Scaffold(
         appBar: AppBar(title: const Text('News Details')),
         body: const Center(
@@ -73,26 +73,7 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('News Details')),
-      body: Column(
-        children: [
-          WebViewWidget(controller: _controller),
-          InkWell(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SavedNewsScreen(
-                      saved: widget.saved,
-                    ),
-                  ));
-            },
-            child: SizedBox(
-              height: 5,
-              width: 5,
-            ),
-          )
-        ],
-      ),
+      body: WebViewWidget(controller: _controller),
     );
   }
 

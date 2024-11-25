@@ -7,6 +7,7 @@ import 'package:sample_news_app/utils/image_constants.dart';
 import 'package:sample_news_app/view/dumydb/dummydb.dart';
 
 import 'package:sample_news_app/view/global_screen/widget_news_section.dart';
+import 'package:sample_news_app/view/saved_news_screen/saved_news_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -21,8 +22,8 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<HomeScreenController>().getNews(Dummydb.categories[0]);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await context.read<HomeScreenController>().getNews(Dummydb.categories[0]);
     });
   }
 
@@ -94,8 +95,10 @@ class _HomeScreenState extends State<HomeScreen>
                     } else {
                       savedArticles.add(article);
                       print(savedArticles);
+                      SavedNewsScreen(
+                        saved: savedArticles,
+                      );
                     }
-                    setState(() {});
                   },
                 );
               },

@@ -10,7 +10,7 @@ class HomeScreenController with ChangeNotifier {
   bool isLoading = false;
   getNews(String category) async {
     final url = Uri.parse(
-        "https://newsapi.org/v2/everything?q=$category&apiKey=bbeb2731418d4dae84a700d7daa0c9a6");
+        "https://newsapi.org/v2/everything?q=$category&apiKey=37cd22cee6d14bf78b9a3cfed10783c7");
     try {
       isLoading = true;
       notifyListeners();

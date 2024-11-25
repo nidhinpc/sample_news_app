@@ -38,18 +38,20 @@ class NewsSection extends StatelessWidget {
                     ),
                   );
                 },
-                child: Container(
-                  height: 250,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(4)),
-                    image: DecorationImage(
-                      image: NetworkImage(article.urlToImage ?? ""),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
+                child: article.urlToImage == null
+                    ? SizedBox()
+                    : Container(
+                        height: 250,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(4)),
+                          image: DecorationImage(
+                            image: NetworkImage(article.urlToImage.toString()),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
               ),
               ListTile(
                 title: Text(
