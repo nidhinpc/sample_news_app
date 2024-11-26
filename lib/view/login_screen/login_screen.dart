@@ -258,7 +258,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           );
                         }
                       }
-                      // Todo : write code  tonavigate to home screen on successful Login with registered credentials
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(vertical: 10),
@@ -291,18 +290,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       TextButton(
                           onPressed: () {
-                            // Todo : write code  to navigate to registration screen
-
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
                                         RegistrationScreen()));
-                            // Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //       builder: (context) => RegistrationScreen(),
-                            //     ));
                           },
                           child: Text(
                             "Sign Up",

@@ -51,9 +51,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               trailing: Icon(Icons.arrow_forward_ios,
                   color: ColorConstants.ButtonColor),
-              onTap: () {
-                // Navigate to profile settings
-              },
+              onTap: () {},
             ),
             Divider(),
             // Notifications

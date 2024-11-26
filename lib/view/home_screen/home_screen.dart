@@ -111,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               ),
             ),
-            // TabBarView to display news
+            // TabBarView
             Expanded(
               child: Consumer<HomeScreenController>(
                 builder: (context, controller, child) {

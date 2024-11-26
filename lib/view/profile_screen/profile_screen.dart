@@ -3,7 +3,7 @@ import 'package:sample_news_app/utils/color_constants.dart';
 import 'package:sample_news_app/utils/image_constants.dart';
 import 'package:sample_news_app/view/login_screen/login_screen.dart';
 import 'package:sample_news_app/view/setting_screen/setting_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Add this for managing user data.
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String name;
