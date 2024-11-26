@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sample_news_app/utils/color_constants.dart';
 import 'package:sample_news_app/utils/image_constants.dart';
+import 'package:sample_news_app/view/login_screen/login_screen.dart';
 import 'package:sample_news_app/view/setting_screen/setting_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Add this for managing user data.
 
 class ProfileScreen extends StatefulWidget {
   final String name;
@@ -112,23 +114,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             ),
             ListTile(
-              leading: Icon(
-                Icons.logout,
-                color: ColorConstants.ButtonColor,
-              ),
-              title: Text('Logout',
-                  style: TextStyle(
-                      color: ColorConstants.ButtonTextColor, fontSize: 20)),
-              onTap: () {
-                Navigator.pushReplacementNamed(context, "");
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text("You have successfully logged out."),
-                    duration: Duration(seconds: 1),
-                  ),
-                );
-              },
-            ),
+                leading: Icon(
+                  Icons.logout,
+                  color: ColorConstants.ButtonColor,
+                ),
+                title: Text('Logout',
+                    style: TextStyle(
+                        color: ColorConstants.ButtonTextColor, fontSize: 20)),
+                onTap: () async {
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.clear();
+
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LoginScreen(),
+                    ),
+                    (route) => false,
+                  );
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("You have successfully logged out."),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                }),
           ],
         ),
       ),
