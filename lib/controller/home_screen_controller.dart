@@ -7,6 +7,8 @@ import 'package:sample_news_app/model/home_screen_model.dart';
 
 class HomeScreenController with ChangeNotifier {
   List<Article>? articlesList = [];
+  List<Article>? filteredArticles = [];
+
   bool isLoading = false;
   getNews(String category) async {
     final url = Uri.parse(
@@ -22,11 +24,27 @@ class HomeScreenController with ChangeNotifier {
         articlesList = jsonData.articles ?? [];
         print(articlesList);
         log(articlesList.toString());
+        filteredArticles = articlesList;
       }
     } catch (e) {
       print(e);
     }
     isLoading = false;
+    notifyListeners();
+  }
+
+  void searchArticles(String searchname) {
+    if (searchname.isEmpty) {
+      filteredArticles = articlesList;
+    } else {
+      filteredArticles = articlesList
+          ?.where((article) =>
+              (article.title?.toLowerCase() ?? '')
+                  .contains(searchname.toLowerCase()) ||
+              (article.description?.toLowerCase() ?? '')
+                  .contains(searchname.toLowerCase()))
+          .toList();
+    }
     notifyListeners();
   }
 }

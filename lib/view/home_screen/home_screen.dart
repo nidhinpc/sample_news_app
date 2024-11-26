@@ -5,9 +5,7 @@ import 'package:sample_news_app/model/home_screen_model.dart';
 import 'package:sample_news_app/utils/color_constants.dart';
 import 'package:sample_news_app/utils/image_constants.dart';
 import 'package:sample_news_app/view/dumydb/dummydb.dart';
-
 import 'package:sample_news_app/view/global_screen/widget_news_section.dart';
-import 'package:sample_news_app/view/saved_news_screen/saved_news_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -17,13 +15,21 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   List<Article> savedArticles = [];
+  final TextEditingController _searchController = TextEditingController();
+  String currentCategory = Dummydb.categories[0];
 
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await context.read<HomeScreenController>().getNews(Dummydb.categories[0]);
+      await context.read<HomeScreenController>().getNews(currentCategory);
+    });
+
+    _searchController.addListener(() {
+      context
+          .read<HomeScreenController>()
+          .searchArticles(_searchController.text);
     });
   }
 
@@ -38,14 +44,18 @@ class _HomeScreenState extends State<HomeScreen>
           leading: Container(
             height: 50,
             decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage(ImageConstants.mainLogo),
-                    fit: BoxFit.cover)),
+              image: DecorationImage(
+                image: AssetImage(ImageConstants.mainLogo),
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
           title: Text(
             'NEWS WORLD',
             style: TextStyle(
-                color: ColorConstants.TextColor, fontWeight: FontWeight.bold),
+              color: ColorConstants.TextColor,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           bottom: TabBar(
             labelStyle: TextStyle(color: ColorConstants.TextColor),
@@ -53,57 +63,86 @@ class _HomeScreenState extends State<HomeScreen>
             indicatorWeight: 6,
             indicatorSize: TabBarIndicatorSize.tab,
             indicator: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: ColorConstants.ButtonColor),
+              borderRadius: BorderRadius.circular(10),
+              color: ColorConstants.ButtonColor,
+            ),
             isScrollable: true,
             tabs: Dummydb.categories
                 .map((category) => Tab(text: category))
                 .toList(),
             onTap: (index) {
+              setState(() {
+                currentCategory = Dummydb.categories[index];
+                _searchController.clear();
+              });
               context
                   .read<HomeScreenController>()
                   .getNews(Dummydb.categories[index]);
             },
           ),
         ),
-        body: TabBarView(
-          children: Dummydb.categories.map((category) {
-            return FutureBuilder(
-              future: context.read<HomeScreenController>().getNews(category),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(
-                      child: Text('Error loading news for $category'));
-                }
+        body: Column(
+          children: [
+            // Search TextField
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 1,
+                      blurRadius: 6,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search news...',
+                    prefixIcon: const Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // TabBarView to display news
+            Expanded(
+              child: Consumer<HomeScreenController>(
+                builder: (context, controller, child) {
+                  final articles = controller.filteredArticles;
 
-                final articles =
-                    context.watch<HomeScreenController>().articlesList;
+                  if (controller.isLoading) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  if (articles == null || articles.isEmpty) {
+                    return Center(
+                      child: Text('No news found for $currentCategory'),
+                    );
+                  }
 
-                if (articles == null || articles.isEmpty) {
-                  return Center(child: Text('No news found for $category'));
-                }
-
-                return NewsSection(
-                  articles: articles,
-                  savedArticles: savedArticles,
-                  onSavePressed: (article) {
-                    if (savedArticles.contains(article)) {
-                      savedArticles.remove(article);
-                    } else {
-                      savedArticles.add(article);
-                      print(savedArticles);
-                      SavedNewsScreen(
-                        saved: savedArticles,
-                      );
-                    }
-                  },
-                );
-              },
-            );
-          }).toList(),
+                  return NewsSection(
+                    articles: articles,
+                    savedArticles: savedArticles,
+                    onSavePressed: (article) {
+                      setState(() {
+                        if (savedArticles.contains(article)) {
+                          savedArticles.remove(article);
+                        } else {
+                          savedArticles.add(article);
+                        }
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
